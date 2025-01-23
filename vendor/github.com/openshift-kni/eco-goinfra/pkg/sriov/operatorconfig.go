@@ -13,10 +13,16 @@ import (
 	"github.com/openshift-kni/eco-goinfra/pkg/clients"
 	k8serrors "k8s.io/apimachinery/pkg/api/errors"
 	metaV1 "k8s.io/apimachinery/pkg/apis/meta/v1"
+	"k8s.io/utils/strings/slices"
 )
 
 const (
 	sriovOperatorConfigName = "default"
+)
+
+var (
+	// allowedDisablePlugins represents all allowed plugins that could be disabled.
+	allowedDisablePlugins = []string{"mellanox"}
 )
 
 // OperatorConfigBuilder provides a struct for SriovOperatorConfig object from the cluster and
@@ -63,6 +69,8 @@ func NewOperatorConfigBuilder(apiClient *clients.Settings, nsname string) *Opera
 		glog.V(100).Infof("The namespace of the SriovOperatorConfig is empty")
 
 		builder.errorMsg = "SriovOperatorConfig 'nsname' is empty"
+
+		return builder
 	}
 
 	return builder
@@ -108,7 +116,7 @@ func PullOperatorConfig(apiClient *clients.Settings, nsname string) (*OperatorCo
 		return nil, err
 	}
 
-	builder := OperatorConfigBuilder{
+	builder := &OperatorConfigBuilder{
 		apiClient: apiClient.Client,
 		Definition: &srIovV1.SriovOperatorConfig{
 			ObjectMeta: metaV1.ObjectMeta{
@@ -131,7 +139,7 @@ func PullOperatorConfig(apiClient *clients.Settings, nsname string) (*OperatorCo
 
 	builder.Definition = builder.Object
 
-	return &builder, nil
+	return builder, nil
 }
 
 // Get returns CatalogSource object if found.
@@ -233,6 +241,47 @@ func (builder *OperatorConfigBuilder) WithConfigDaemonNodeSelector(
 	}
 
 	builder.Definition.Spec.ConfigDaemonNodeSelector = configDaemonNodeSelector
+
+	return builder
+}
+
+// WithDisablePlugins configures disablePlugins in the SriovOperatorConfig.
+func (builder *OperatorConfigBuilder) WithDisablePlugins(plugins []string) *OperatorConfigBuilder {
+	if valid, _ := builder.validate(); !valid {
+		return builder
+	}
+
+	glog.V(100).Infof("Configuring disablePlugins %v in SriovOperatorConfig object %s",
+		plugins, builder.Definition.Name,
+	)
+
+	var pluginSlice srIovV1.PluginNameSlice
+
+	for _, plugin := range plugins {
+		if !slices.Contains(allowedDisablePlugins, plugin) {
+			glog.V(100).Infof("error to add plugin %s, allowed modes are %v", plugin, allowedDisablePlugins)
+
+			builder.errorMsg = "invalid plugin parameter"
+
+			return builder
+		}
+
+		pluginSlice = append(pluginSlice, srIovV1.PluginNameValue(plugin))
+	}
+
+	builder.Definition.Spec.DisablePlugins = pluginSlice
+
+	return builder
+}
+
+// RemoveDisablePlugins deletes disablePlugins in the SriovOperatorConfig.
+func (builder *OperatorConfigBuilder) RemoveDisablePlugins() *OperatorConfigBuilder {
+	if valid, _ := builder.validate(); !valid {
+		return builder
+	}
+
+	glog.V(100).Infof("Removing disablePlugins in SriovOperatorConfig object %s", builder.Definition.Name)
+	builder.Definition.Spec.DisablePlugins = nil
 
 	return builder
 }

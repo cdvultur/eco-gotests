@@ -127,16 +127,6 @@ type CSIDriverSpec struct {
 	ReadAffinity *rookCephv1.ReadAffinitySpec `json:"readAffinity,omitempty"`
 }
 
-type SharedFilesystemConfigurationSpec struct {
-	// +kubebuilder:validation:Optional
-	Parameters map[string]string `json:"parameters,omitempty"`
-}
-
-type BlockPoolConfigurationSpec struct {
-	// +kubebuilder:validation:Optional
-	Parameters map[string]string `json:"parameters,omitempty"`
-}
-
 // BackingStorageClass defines the backing storageclass for StorageDeviceSet
 type BackingStorageClass struct {
 	metav1.ObjectMeta `json:"metadata,omitempty"`
@@ -249,6 +239,8 @@ type ManageCephBlockPools struct {
 	// +kubebuilder:validation:MaxLength=253
 	// +kubebuilder:validation:Pattern=^[a-z0-9]([-a-z0-9]*[a-z0-9])?(\\.[a-z0-9]([-a-z0-9]*[a-z0-9])?)*$
 	VirtualizationStorageClassName string `json:"virtualizationStorageClassName,omitempty"`
+	// PoolSpec specifies the pool specification for the default cephBlockPool
+	PoolSpec rookCephv1.PoolSpec `json:"poolSpec,omitempty"`
 }
 
 // ManageCephNonResilientPools defines how to reconcile ceph non-resilient pools
@@ -266,8 +258,11 @@ type ManageCephNonResilientPools struct {
 	// +kubebuilder:validation:MaxLength=253
 	// +kubebuilder:validation:Pattern=^[a-z0-9]([-a-z0-9]*[a-z0-9])?(\\.[a-z0-9]([-a-z0-9]*[a-z0-9])?)*$
 	StorageClassName string `json:"storageClassName,omitempty"`
-	// ReconcileStrategy and other related fields are not used for now
-	// They can be added once the feature goes to GA
+	// Parameters is a list of properties to enable on the non-resilient cephBlockPools
+	// +kubebuilder:pruning:PreserveUnknownFields
+	// +optional
+	// +nullable
+	Parameters map[string]string `json:"parameters,omitempty"`
 }
 
 // ManageCephFilesystems defines how to reconcile CephFilesystems
@@ -280,6 +275,8 @@ type ManageCephFilesystems struct {
 	// +kubebuilder:validation:MaxLength=253
 	// +kubebuilder:validation:Pattern=^[a-z0-9]([-a-z0-9]*[a-z0-9])?(\\.[a-z0-9]([-a-z0-9]*[a-z0-9])?)*$
 	StorageClassName string `json:"storageClassName,omitempty"`
+	// MetadataPoolSpec specifies the pool specification for the default cephFS metadata pool
+	MetadataPoolSpec rookCephv1.PoolSpec `json:"metadataPoolSpec,omitempty"`
 	// DataPoolSpec specifies the pool specification for the default cephfs data pool
 	DataPoolSpec rookCephv1.PoolSpec `json:"dataPoolSpec,omitempty"`
 	// AdditionalDataPools specifies list of additional named cephfs data pools
@@ -297,6 +294,10 @@ type ManageCephObjectStores struct {
 	// +kubebuilder:validation:MaxLength=253
 	// +kubebuilder:validation:Pattern=^[a-z0-9]([-a-z0-9]*[a-z0-9])?(\\.[a-z0-9]([-a-z0-9]*[a-z0-9])?)*$
 	StorageClassName string `json:"storageClassName,omitempty"`
+	// MetadataPoolSpec specifies the pool specification for the default cephObjectStore metadata pool
+	MetadataPoolSpec rookCephv1.PoolSpec `json:"metadataPoolSpec,omitempty"`
+	// DataPoolSpec specifies the pool specification for the default cephObjectStore data pool
+	DataPoolSpec rookCephv1.PoolSpec `json:"dataPoolSpec,omitempty"`
 }
 
 // ManageCephObjectStoreUsers defines how to reconcile CephObjectStoreUsers

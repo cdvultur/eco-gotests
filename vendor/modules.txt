@@ -578,8 +578,8 @@ github.com/opencontainers/runtime-spec/specs-go
 ## explicit; go 1.22.0
 github.com/openshift-kni/cluster-group-upgrades-operator/pkg/api/clustergroupupgrades
 github.com/openshift-kni/cluster-group-upgrades-operator/pkg/api/clustergroupupgrades/v1alpha1
-# github.com/openshift-kni/eco-goinfra v0.0.0-20250204152505-4e2e8cf6eccd
-## explicit; go 1.23.5
+# github.com/openshift-kni/eco-goinfra v0.0.0-20250307145535-4ddc3a463af4
+## explicit; go 1.23.6
 github.com/openshift-kni/eco-goinfra/pkg/apiservers
 github.com/openshift-kni/eco-goinfra/pkg/argocd
 github.com/openshift-kni/eco-goinfra/pkg/assisted
@@ -686,6 +686,9 @@ github.com/openshift-kni/eco-goinfra/pkg/schemes/imagebasedinstall/hive/api/v1/o
 github.com/openshift-kni/eco-goinfra/pkg/schemes/imagebasedinstall/hive/api/v1/ovirt
 github.com/openshift-kni/eco-goinfra/pkg/schemes/imagebasedinstall/hive/api/v1/vsphere
 github.com/openshift-kni/eco-goinfra/pkg/schemes/imagebasedinstall/hive/scheme
+github.com/openshift-kni/eco-goinfra/pkg/schemes/kmm-hub/v1beta1
+github.com/openshift-kni/eco-goinfra/pkg/schemes/kmm/v1beta1
+github.com/openshift-kni/eco-goinfra/pkg/schemes/kmm/v1beta2
 github.com/openshift-kni/eco-goinfra/pkg/schemes/metallb/frrtypes
 github.com/openshift-kni/eco-goinfra/pkg/schemes/metallb/mlboperator
 github.com/openshift-kni/eco-goinfra/pkg/schemes/metallb/mlbtypes
@@ -1832,6 +1835,7 @@ maistra.io/api/core/v2
 # open-cluster-management.io/api v0.15.0
 ## explicit; go 1.22.0
 open-cluster-management.io/api/cluster/v1
+open-cluster-management.io/api/operator/v1
 open-cluster-management.io/api/work/v1
 # open-cluster-management.io/config-policy-controller v0.15.0
 ## explicit; go 1.22.0
